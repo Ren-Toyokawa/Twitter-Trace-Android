@@ -15,10 +15,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -34,8 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.twitter_trace_android.R
 import com.example.twitter_trace_android.data.model.Tweet
-import com.example.twitter_trace_android.data.repository.tweet.impl.FakeTweetRepository
-import com.example.twitter_trace_android.data.repository.user.impl.FakeUserRepository
 import com.example.twitter_trace_android.data.repository.user.impl.users
 import com.example.twitter_trace_android.ui.theme.TwitterTraceAndroidTheme
 import java.util.*
@@ -43,17 +39,19 @@ import java.util.*
 // region タイムライン画面
 @Composable
 fun TimelineRoute(
-    viewModel: TimelineViewModel,
-    uiState: TimelineUiState
+    viewModel: TimelineViewModel
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     TimelineScreen(
-        uiState = uiState
+        uiState = uiState,
+        onSelectListTab = { viewModel.selectListTab(it) }
     )
 }
 
 @Composable
 fun TimelineScreen(
-    uiState: TimelineUiState
+    uiState: TimelineUiState,
+    onSelectListTab: (String) -> Unit
 ) {
     Column(Modifier.padding(horizontal = 17.dp)) {
         // ヘッダー
@@ -62,14 +60,17 @@ fun TimelineScreen(
         // リストタブ
         ListTabs(
             tweetLists = uiState.tweetListsList,
-            selectedListIndex = uiState.selectedListIndex,
+            selectedListId = uiState.selectedListId,
+            onSelectListTab = onSelectListTab,
             Modifier.padding(top = 14.dp)
         )
 
         // ツイート一覧
         if (uiState.tweetListsList.isNotEmpty()) {
-            val activeTweetList = uiState.tweetListsList[uiState.selectedListIndex]
-            TweetLists(tweets = activeTweetList.tweets)
+            val activeTweetList = uiState.tweetListsList.first { it.id == uiState.selectedListId }
+            TweetLists(
+                tweets = activeTweetList.tweets
+            )
         }
     }
 }
@@ -83,8 +84,9 @@ fun DefaultPreview() {
                 TimelineUiState(
                     user = users[0],
                     tweetListsList = emptyList<TweetList>().toMutableStateList(),
-                    selectedListIndex = 0
-                )
+                    selectedListId = "11111111"
+                ),
+                onSelectListTab = {}
             )
         }
     }
@@ -133,7 +135,12 @@ fun UserIcon(iconImageUrl: Int) {
 
 // region リストタブ
 @Composable
-fun ListTabs(tweetLists: SnapshotStateList<TweetList>, selectedListIndex: Int, modifier: Modifier = Modifier) {
+fun ListTabs(
+    tweetLists: SnapshotStateList<TweetList>,
+    selectedListId: String,
+    onSelectListTab: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyRow(
         Modifier
             .fillMaxWidth()
@@ -141,11 +148,11 @@ fun ListTabs(tweetLists: SnapshotStateList<TweetList>, selectedListIndex: Int, m
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        itemsIndexed(tweetLists) {index, tweetList ->
+        itemsIndexed(tweetLists) { _, tweetList ->
             ListTab(
                 listName = tweetList.name,
-                isActive = index == selectedListIndex,
-                modifier = Modifier.clickable {  }
+                isActive = tweetList.id == selectedListId,
+                modifier = Modifier.clickable { onSelectListTab(tweetList.id) }
             )
         }
     }
@@ -185,7 +192,9 @@ fun ListTab(listName: String, isActive: Boolean = false, modifier: Modifier) {
 
 // region ツイートリスト
 @Composable
-fun TweetLists(tweets: List<Tweet>) {
+fun TweetLists(
+    tweets: List<Tweet>
+) {
     LazyColumn {
         items(tweets) { tweet ->
             TweetCell(tweet)
@@ -194,7 +203,9 @@ fun TweetLists(tweets: List<Tweet>) {
 }
 
 @Composable
-fun TweetCell(tweet: Tweet) {
+fun TweetCell(
+    tweet: Tweet
+) {
     Row(
         Modifier
             .fillMaxWidth()

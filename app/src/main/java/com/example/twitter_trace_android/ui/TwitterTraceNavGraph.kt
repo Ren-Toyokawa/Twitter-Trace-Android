@@ -35,11 +35,9 @@ fun TwitterTraceNavGraph(
                     FakeTweetRepository()
                 )
             )
-            // UiState of the HomeScreen
-            val uiState by timelineViewModel.uiState.collectAsState()
+
             TimelineRoute(
-                viewModel = timelineViewModel,
-                uiState = uiState
+                viewModel = timelineViewModel
             )
         }
     }

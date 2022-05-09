@@ -39,7 +39,6 @@ val tweetListLists: Map<String, MutableList<TweetList>> = mutableMapOf(
 // region Tweets
 val tweets: List<Tweet> = listOf(
     Tweet(
-        // TODO: UserData.ktで定義しているものを使おうとするとnullになるため、回避方法を調べる
         tweetedUser = User(
             id = "11111111",
             name = "太宰治",

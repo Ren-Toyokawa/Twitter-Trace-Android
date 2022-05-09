@@ -25,7 +25,7 @@ data class TimelineUiState(
     val isLoading: Boolean = false,
     val user: User = User(),
     val tweetListsList: SnapshotStateList<TweetList> = mutableStateListOf(),
-    val selectedListIndex: Int = 0
+    val selectedListId: String = ""
 )
 
 /**
@@ -52,13 +52,13 @@ private data class TimelineViewModelState(
     val isLoading: Boolean = false,
     val user: User = User(),
     val tweetListsList: SnapshotStateList<TweetList> = mutableStateListOf(),
-    val selectedListIndex: Int = 0
+    val selectedListId: String = ""
 ){
     val uiState: TimelineUiState = TimelineUiState(
         isLoading = isLoading,
         user = user,
         tweetListsList = tweetListsList,
-        selectedListIndex = selectedListIndex
+        selectedListId = selectedListId
     )
 }
 
@@ -117,11 +117,46 @@ class TimelineViewModel(
                 it.copy(
                     isLoading = false,
                     user = userInfo,
-                    tweetListsList = tweetListsList.toMutableStateList(), // TODO
-                    selectedListIndex = 0 // TODO
+                    tweetListsList = tweetListsList.toMutableStateList(), // このやり方が正しいのかわからない
+                    selectedListId = tweetListsList.first().id
                 )
             }
         }
+    }
+
+    fun selectListTab(listId: String) {
+        viewModelState.update {
+            it.copy(
+                selectedListId = listId
+            )
+        }
+
+        val tweetListsList = uiState.value.tweetListsList
+        val currentSelectedListIndex = tweetListsList.indexOfFirst { it.id == listId }
+        val currentSelectedTweetList = uiState.value.tweetListsList[currentSelectedListIndex]
+        // 現在選択しているツイートリストのツイートが空の場合新規で読み込む
+        if ( currentSelectedTweetList.tweets.isEmpty() ) {
+            viewModelScope.launch {
+                //
+                val tweetResult =
+                    withContext(Dispatchers.Default) {
+                        // 一番最初のリスト(最新ツイート)をあらかじめ取得し、表示する
+                        tweetRepository.getTweets(currentSelectedTweetList.belongUserIds)
+                    }
+
+                uiState.value.tweetListsList[currentSelectedListIndex] = tweetListsList[currentSelectedListIndex].copy(
+                    tweets = tweetResult.successOr(emptyList())
+                )
+
+                viewModelState.update {
+                    it.copy(
+                        isLoading = false,
+                        tweetListsList = tweetListsList.toMutableStateList()
+                    )
+                }
+            }
+        }
+
     }
 
     /**
