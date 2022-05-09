@@ -3,6 +3,7 @@ package com.example.twitter_trace_android.ui.timeline
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -33,11 +34,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.twitter_trace_android.R
 import com.example.twitter_trace_android.data.model.Tweet
+import com.example.twitter_trace_android.data.repository.tweet.impl.FakeTweetRepository
+import com.example.twitter_trace_android.data.repository.user.impl.FakeUserRepository
 import com.example.twitter_trace_android.data.repository.user.impl.users
 import com.example.twitter_trace_android.ui.theme.TwitterTraceAndroidTheme
 import java.util.*
 
 // region タイムライン画面
+@Composable
+fun TimelineRoute(
+    viewModel: TimelineViewModel,
+    uiState: TimelineUiState
+) {
+    TimelineScreen(
+        uiState = uiState
+    )
+}
+
 @Composable
 fun TimelineScreen(
     uiState: TimelineUiState
@@ -57,8 +70,6 @@ fun TimelineScreen(
         if (uiState.tweetListsList.isNotEmpty()) {
             val activeTweetList = uiState.tweetListsList[uiState.selectedListIndex]
             TweetLists(tweets = activeTweetList.tweets)
-        } else {
-            // TODO: Tweetがない or エラーで読み込めない旨を表示する
         }
     }
 }
@@ -133,18 +144,19 @@ fun ListTabs(tweetLists: SnapshotStateList<TweetList>, selectedListIndex: Int, m
         itemsIndexed(tweetLists) {index, tweetList ->
             ListTab(
                 listName = tweetList.name,
-                isActive = index == selectedListIndex
+                isActive = index == selectedListIndex,
+                modifier = Modifier.clickable {  }
             )
         }
     }
 }
 
 @Composable
-fun ListTab(listName: String, isActive: Boolean = false) {
+fun ListTab(listName: String, isActive: Boolean = false, modifier: Modifier) {
     Column(
-        Modifier.width(
-            IntrinsicSize.Max
-        )
+        Modifier
+            .width(IntrinsicSize.Max)
+            .then(modifier)
     ) {
         Text(
             text = listName,

@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.twitter_trace_android.TwitterTraceDestinations
 import com.example.twitter_trace_android.data.repository.tweet.impl.FakeTweetRepository
 import com.example.twitter_trace_android.data.repository.user.impl.FakeUserRepository
+import com.example.twitter_trace_android.ui.timeline.TimelineRoute
 import com.example.twitter_trace_android.ui.timeline.TimelineScreen
 import com.example.twitter_trace_android.ui.timeline.TimelineUiState
 import com.example.twitter_trace_android.ui.timeline.TimelineViewModel
@@ -36,7 +37,10 @@ fun TwitterTraceNavGraph(
             )
             // UiState of the HomeScreen
             val uiState by timelineViewModel.uiState.collectAsState()
-            TimelineScreen(uiState = uiState)
+            TimelineRoute(
+                viewModel = timelineViewModel,
+                uiState = uiState
+            )
         }
     }
 }
