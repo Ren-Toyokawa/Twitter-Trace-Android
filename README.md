@@ -1,59 +1,101 @@
 Twitter-Trace-Android
-# これは何か
-Androidアプリ開発の学習のためにTwitterアプリのトレースをするレポジトリとなります。
+# 概要
+実務で半年ほど Androidアプリの作成、保守運用を担当しているのですが、元々サーバーサイドを担当していたため
+- Androidの基礎知識
+- 最新のAndroid開発のキャッチアップ
 
-下記を目的としています
-- ポートフォリオ
-- Androidの知識で不足している部分を補う
+が不足していると感じており、それらを学習するためのレポジトリとなっています。  
+このレポジトリを育てていき、転職や案件獲得の際のポートフォリオにもできたら良いなと思っています。
 
-同様の目的でiOS,iPadOS版も作成中です。
+
+# このレポジトリの読み方
+WIP
+
 
 # レポジトリの構成
 ## アーキテクチャ
-MVVMを採用しています
-OSSのプロジェクトを参考にしていますが、ディレクトリの分け方などが正しくはないかもしれません(気づき次第随時改善していく予定です)。
+**Jetpack Compose + Navigation Component + MVVM** を採用しています
 
-マルチモジュールも検討しましたが
+## アーキテクチャの選定理由
+### Jetpack Compose
+- XMLでのViewの構築が嫌だった
+- 宣言的UIが好きである(SwiftUIやReactなど)
+- Compose Onlyの場合、ビルド時間が短縮される可能性を公式のドキュメントが示唆している
+  - https://developer.android.com/jetpack/compose/ergonomics?hl=ja#build-time
+
+### Navigation Component
+WIP
+
+
+### MVVM
+- 公式のガイドラインに準拠しました
+
+### マルチモジュール
+
+検討しましたが
 - 現状メリットが薄い
 - まず単一モジュールで作り分割する方が学習コストが低そう
 
 といった理由で今回は採用していません。
 
-## ディレクトリ
+### アーキテクチャイメージ
+<img src="/images/Architecture.png" width="250">
+
+※ Android Developersのページを参考に自分で作りました
+
+## ディレクトリ構造
+
+---
+
 ### ui
+名前の通りUI部分を担います  
+[Android Developers](https://developer.android.com/jetpack/guide/ui-layer?hl=ja)の言葉を引用すると
+```
+UIレイヤはアプリデータの変更をUIが提示できる形式に変換して表示するパイプラインです。
+```
+
+
 下記のような構成になっています。
 - 機能
-  - 機能Activity
-  - 機能Fragment
+  - 機能Screen
   - 機能ViewModel
 
-### data.usecase
-ViewModel と Repositryの窓口です。
+---
+
+### domain
+#### usecase
+ViewModel と Repositryの仲介をします。  
 ViewModelはUsecaseを介さないとデータへアクセスできません
 
-### data.repository
-UseCase毎に必要なdatasourceを保持します。
+### data
+#### repository
+UseCase毎に必要なdatasourceを保持します。  
 UseCaseからのリクエストに応じ、必要なデータを返却します。
 
-### data.datasource
+#### datasources
 Dataを取得する大元になります。
-APIのエンドポイント, Firestore等を内包しています。
+API, Firestore等を内包しています。
 
-### data.model
-アプリ内で使用する Dataの構造を定義しています。
+---
 
-# 処理の流れ
-TODO: UMLにする
-TODO: もっと実際の処理をイメージしやすいように
+### model
+アプリ内で使用する Dataの構造を定義しています。  
+このディレクトリは全てのレイヤーから参照される想定です
 
-1. Fragment
-2. ViewModel
-3. Use Case
-4. Repository
-5. Datasource
+---
+
+### 参考にしたページ
+
+- Android developers
+  - https://developer.android.com/jetpack/guide?hl=ja
+  - https://developer.android.com/jetpack/guide/ui-layer?hl=ja
+  - https://developer.android.com/jetpack/guide/domain-layer?hl=ja
+  - https://developer.android.com/jetpack/guide/data-layer?hl=ja
+- Google のサンプルプロジェクト(Google I/Oのスケジュールアプリ)
+  - https://github.com/google/iosched
+- Official Jetpack Compose samples.
+  - https://github.com/android/compose-samples
 
 # その他
-- Kotlin DSLを使用している理由としては実験的な意味合いが強いです。
+- Kotlin DSLを使用している理由としては実験的な意味合いが強いです。  
   Kotlin DSLを使用するとビルドが遅くなる可能性があることは認識しています。(参考: [https://developer.android.com/studio/build/migrate-to-kts?hl=ja])
-  
-
