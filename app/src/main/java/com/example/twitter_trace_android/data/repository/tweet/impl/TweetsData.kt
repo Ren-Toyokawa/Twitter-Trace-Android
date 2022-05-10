@@ -24,12 +24,12 @@ val tweetListLists: Map<String, MutableList<TweetList>> = mutableMapOf(
         TweetList(
             id = "11111111",
             name = "最新ツイート",
-            belongUserIds = listOf("11111111", "11111112", "11111113")
+            belongUserIds = listOf("11111111")
         ),
         TweetList(
             id = "11111112",
             name = "テスト",
-            belongUserIds = listOf("11111111", "11111112", "11111113")
+            belongUserIds = listOf("11111112")
         )
     )
 )
@@ -45,6 +45,21 @@ val tweets: List<Tweet> = listOf(
             userIconId = R.drawable.dazai_osamu
         ),
         tweet = "古い友人にウィスキーやら毛布やらを奪われた挙句、威張るなと吐き捨てられたのだが...",
+        tweetedAt = Date(),
+        reply = false,
+        retweeted = false,
+        liked = false,
+        replyCount = 0,
+        retweetCount = 0,
+        likeCount = 0
+    ),
+    Tweet(
+        tweetedUser = User(
+            id = "11111112",
+            name = "太宰治@裏垢",
+            userIconId = R.drawable.dazai_osamu
+        ),
+        tweet = "井伏先生に借りた借金をまだ返していないことに気がついた",
         tweetedAt = Date(),
         reply = false,
         retweeted = false,

@@ -9,9 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.twitter_trace_android.data.model.Tweet
 import com.example.twitter_trace_android.data.model.User
 import com.example.twitter_trace_android.data.repository.tweet.TweetRepository
+import com.example.twitter_trace_android.data.repository.tweet.impl.tweetLists
 import com.example.twitter_trace_android.data.repository.user.UserRepository
 import com.example.twitter_trace_android.data.successOr
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -88,39 +90,21 @@ class TimelineViewModel(
 
     init {
         viewModelScope.launch {
-            val userInfoResult =
-                withContext(Dispatchers.Default) {
-                    // TODO: 固定値除去
-                    userRepository.getUserInfo("11111111")
-                }
-
-            val userInfo = userInfoResult.successOr(User())
-            val tweetListsListResult =
-                withContext(Dispatchers.Default) {
-                    tweetRepository.getTweetListsList(userInfo.id)
-                }
-
-            val tweetListsList = tweetListsListResult.successOr(mutableListOf())
-
-            //
-            val tweetResult =
-                withContext(Dispatchers.Default) {
-                    // 一番最初のリスト(最新ツイート)をあらかじめ取得し、表示する
-                    tweetRepository.getTweets(tweetListsList[0].belongUserIds)
-                }
-
-            tweetListsList[0] = tweetListsList[0].copy(
-                tweets = tweetResult.successOr(emptyList())
-            )
+            val userInfoDeferred = async { userRepository.getUserInfo("11111111") }
+            val userInfo = userInfoDeferred.await().successOr(User())
+            val tweetListsListDeferred = tweetRepository.getTweetListsList(userInfo.id)
+            val tweetListsList = tweetListsListDeferred.successOr(mutableListOf())
 
             viewModelState.update {
                 it.copy(
-                    isLoading = false,
                     user = userInfo,
-                    tweetListsList = tweetListsList.toMutableStateList(), // このやり方が正しいのかわからない
+                    tweetListsList = tweetListsList.toMutableStateList(),
                     selectedListId = tweetListsList.first().id
                 )
             }
+
+            // 選択中のリストを追加
+            loadSelectedListTweet()
         }
     }
 
@@ -130,33 +114,58 @@ class TimelineViewModel(
                 selectedListId = listId
             )
         }
+        loadSelectedListTweet()
+    }
 
+    private fun refreshUserInfo() {
+        viewModelScope.launch {
+            val userInfoResult = async { userRepository.getUserInfo("11111111") }
+            val userInfo = userInfoResult.await().successOr(User())
+
+            viewModelState.update {
+                it.copy(
+                    user = userInfo
+                )
+            }
+        }
+    }
+
+
+    private fun refreshTweetListsList(){
+        viewModelScope.launch {
+            val tweetListsListResult = async { tweetRepository.getTweetListsList(uiState.value.user.id) }
+            val tweetListsList = tweetListsListResult.await().successOr(mutableListOf())
+
+            viewModelState.update {
+                it.copy(
+                    tweetListsList = tweetListsList.toMutableStateList(),
+                    selectedListId = tweetListsList.first().id
+                )
+            }
+        }
+    }
+
+    private fun loadSelectedListTweet(){
         val tweetListsList = uiState.value.tweetListsList
-        val currentSelectedListIndex = tweetListsList.indexOfFirst { it.id == listId }
+
+        val currentSelectedListIndex = tweetListsList.indexOfFirst { it.id == uiState.value.selectedListId }
         val currentSelectedTweetList = uiState.value.tweetListsList[currentSelectedListIndex]
         // 現在選択しているツイートリストのツイートが空の場合新規で読み込む
         if ( currentSelectedTweetList.tweets.isEmpty() ) {
             viewModelScope.launch {
-                //
-                val tweetResult =
-                    withContext(Dispatchers.Default) {
-                        // 一番最初のリスト(最新ツイート)をあらかじめ取得し、表示する
-                        tweetRepository.getTweets(currentSelectedTweetList.belongUserIds)
-                    }
+                val tweetResult = async { tweetRepository.getTweets(currentSelectedTweetList.belongUserIds) }
 
                 uiState.value.tweetListsList[currentSelectedListIndex] = tweetListsList[currentSelectedListIndex].copy(
-                    tweets = tweetResult.successOr(emptyList())
+                    tweets = tweetResult.await().successOr(emptyList())
                 )
 
                 viewModelState.update {
                     it.copy(
-                        isLoading = false,
                         tweetListsList = tweetListsList.toMutableStateList()
                     )
                 }
             }
         }
-
     }
 
     /**
