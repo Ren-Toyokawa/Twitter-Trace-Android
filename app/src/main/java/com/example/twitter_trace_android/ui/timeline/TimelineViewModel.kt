@@ -49,7 +49,6 @@ data class TweetList(
 /**
  *
  */
-
 private data class TimelineViewModelState(
     val isLoading: Boolean = false,
     val user: User = User(),
