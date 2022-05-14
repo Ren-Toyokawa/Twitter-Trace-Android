@@ -1,7 +1,10 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+
+    kotlin("kapt")
 }
+
 
 android {
     compileSdk = 31
@@ -88,4 +91,8 @@ dependencies {
 
     // navigation
     implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
+
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha01")
+
+    kapt("androidx.hilt:hilt-compiler:1.0.0-alpha01")
 }
