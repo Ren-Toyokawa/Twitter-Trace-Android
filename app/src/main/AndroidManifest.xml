@@ -11,14 +11,6 @@
         android:theme="@style/Theme.TwitterTraceAndroid"
         android:name=".TwitterTraceApplication">
         <activity
-            android:name=".TestActivity"
-            android:exported="false"
-            android:label="@string/title_activity_test"
-            android:theme="@style/Theme.TwitterTraceAndroid.NoActionBar" />
-        <activity
-            android:name=".ui.timeline.TimelineActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -27,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.login.LoginActivity" />
     </application>
 
 </manifest>
