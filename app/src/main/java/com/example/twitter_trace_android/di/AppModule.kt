@@ -16,11 +16,8 @@ object UserRepositoryModule {
 
     @Singleton
     @Provides
-    fun providesUserRepository(
-        fakeUserRepository: FakeUserRepository
-    ): UserRepository {
-        return FakeUserRepository(
-        )
+    fun providesUserRepository(): UserRepository {
+        return FakeUserRepository()
     }
 }
 
@@ -30,9 +27,7 @@ object TweetRepositoryModule {
 
     @Singleton
     @Provides
-    fun providesTweetRepository(
-        fakeTweetRepository: FakeTweetRepository
-    ): TweetRepository {
+    fun providesTweetRepository(): TweetRepository {
         return FakeTweetRepository()
     }
 }
