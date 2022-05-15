@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.twitter_trace_android.R
 import com.example.twitter_trace_android.data.model.Tweet
 import com.example.twitter_trace_android.data.repository.user.impl.users
@@ -39,7 +40,7 @@ import java.util.*
 // region タイムライン画面
 @Composable
 fun TimelineRoute(
-    viewModel: TimelineViewModel
+    viewModel: TimelineViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     TimelineScreen(

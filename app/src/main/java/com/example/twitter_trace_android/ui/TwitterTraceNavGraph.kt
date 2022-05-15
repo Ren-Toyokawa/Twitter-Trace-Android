@@ -12,6 +12,8 @@ import com.example.twitter_trace_android.data.repository.tweet.impl.FakeTweetRep
 import com.example.twitter_trace_android.data.repository.user.impl.FakeUserRepository
 import com.example.twitter_trace_android.ui.timeline.TimelineRoute
 import com.example.twitter_trace_android.ui.timeline.TimelineViewModel
+import androidx.activity.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun TwitterTraceNavGraph(
@@ -24,18 +26,7 @@ fun TwitterTraceNavGraph(
         modifier = modifier
     ) {
         composable(TwitterTraceDestinations.TIMELINE_ROUTE) {
-            // TODO: hiltでもっと良くかけないか調査
-            val timelineViewModel:TimelineViewModel = viewModel(
-                factory = TimelineViewModel.provideFactory(
-                    FakeUserRepository(),
-                    FakeTweetRepository()
-                )
-            )
-//            val timelineViewModel:TimelineViewMode by viewModels()
-
-            TimelineRoute(
-                viewModel = timelineViewModel
-            )
+            TimelineRoute()
         }
     }
 }

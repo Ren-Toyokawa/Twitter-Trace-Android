@@ -3,11 +3,20 @@ package com.example.twitter_trace_android.data.repository.tweet.impl
 import com.example.twitter_trace_android.data.Result
 import com.example.twitter_trace_android.data.model.Tweet
 import com.example.twitter_trace_android.data.repository.tweet.TweetRepository
+import com.example.twitter_trace_android.data.repository.user.UserRepository
+import com.example.twitter_trace_android.data.repository.user.impl.FakeUserRepository
 import com.example.twitter_trace_android.ui.timeline.TweetList
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FakeTweetRepository : TweetRepository {
+class FakeTweetRepository @Inject constructor(): TweetRepository {
     override suspend fun getTweets(userIds: List<String>): Result<List<Tweet>> {
         return withContext(Dispatchers.IO) {
             val tweetsResult = tweets.filter { userIds.contains(it.tweetedUser.id) }

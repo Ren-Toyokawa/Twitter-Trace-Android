@@ -3,6 +3,7 @@ package com.example.twitter_trace_android.ui.timeline
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,11 +13,13 @@ import com.example.twitter_trace_android.data.repository.tweet.TweetRepository
 import com.example.twitter_trace_android.data.repository.tweet.impl.tweetLists
 import com.example.twitter_trace_android.data.repository.user.UserRepository
 import com.example.twitter_trace_android.data.successOr
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 // region UI State
 /**
@@ -73,7 +76,8 @@ private data class TimelineViewModelState(
  * - ビジネスレイヤやデータレイヤなど、通常は階層の他のレイヤに配置されるアプリのビジネス ロジックへのアクセスを提供する。
  * - 特定の画面に表示するアプリデータ（画面または UI の状態）を準備する。
  */
-class TimelineViewModel(
+@HiltViewModel
+class TimelineViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val tweetRepository: TweetRepository
 ) : ViewModel() {
@@ -163,20 +167,6 @@ class TimelineViewModel(
                         tweetListsList = tweetListsList.toMutableStateList()
                     )
                 }
-            }
-        }
-    }
-
-    /**
-     */
-    companion object {
-        fun provideFactory(
-            userRepository: UserRepository,
-            tweetRepository: TweetRepository
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return TimelineViewModel(userRepository, tweetRepository) as T
             }
         }
     }
