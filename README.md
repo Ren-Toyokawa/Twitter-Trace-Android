@@ -9,37 +9,19 @@ Twitter-Trace-Android
 
 現在個人開発のアプリに注力しているため、更新頻度は少なくなっています
 
-# このレポジトリの読み方
-WIP
-
+# 使用技術
+- Kotlin
+- Jetpack Compose
+- Navigation Component
+- Hilt
 
 # レポジトリの構成
 ## アーキテクチャ
 - Android Developers で推奨されている UI-Domain-Data で形成されるアーキテクチャを採用しています
   - https://developer.android.com/jetpack/guide?hl=ja
-
-## 使用しているフレームワーク等の選定理由
-### Jetpack Compose
-- XMLでのViewの構築が嫌だった
-- 宣言的UIが好きである(SwiftUIやReactなど)
-- Compose Onlyの場合、ビルド時間が短縮される可能性を公式のドキュメントが示唆している
-  - https://developer.android.com/jetpack/compose/ergonomics?hl=ja#build-time
-
-### Navigation Component
-WIP
-
-### マルチモジュール
-
-検討しましたが
-- 現状メリットが薄い
-- まず単一モジュールで作り分割する方が学習コストが低そう
-
-といった理由で今回は採用していません。
-
+  
 ### アーキテクチャイメージ
 <img src="/images/Architecture.png" width="250">
-
-※ Android Developersのページを参考に自分で作りました
 
 ## ディレクトリ構造
 
@@ -51,7 +33,6 @@ WIP
 ```
 UIレイヤはアプリデータの変更をUIが提示できる形式に変換して表示するパイプラインです。
 ```
-
 
 下記のような構成になっています。
 - 機能
