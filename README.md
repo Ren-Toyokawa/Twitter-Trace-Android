@@ -7,6 +7,7 @@ Twitter-Trace-Android
 が不足していると感じており、それらを学習するためのレポジトリとなっています。  
 このレポジトリを育てていき、転職や案件獲得の際のポートフォリオにもできたら良いなと思っています。
 
+現在個人開発のアプリに注力しているため、更新頻度は少なくなっています
 
 # このレポジトリの読み方
 WIP
@@ -14,9 +15,10 @@ WIP
 
 # レポジトリの構成
 ## アーキテクチャ
-**Jetpack Compose + Navigation Component + MVVM** を採用しています
+- Android Developers で推奨されている UI-Domain-Data で形成されるアーキテクチャを採用しています
+  - https://developer.android.com/jetpack/guide?hl=ja
 
-## アーキテクチャの選定理由
+## 使用しているフレームワーク等の選定理由
 ### Jetpack Compose
 - XMLでのViewの構築が嫌だった
 - 宣言的UIが好きである(SwiftUIやReactなど)
@@ -25,10 +27,6 @@ WIP
 
 ### Navigation Component
 WIP
-
-
-### MVVM
-- 公式のガイドラインに準拠しました
 
 ### マルチモジュール
 
@@ -62,8 +60,9 @@ UIレイヤはアプリデータの変更をUIが提示できる形式に変換�
 
 ---
 
-### domain
+### domain(現在は存在ていません)
 #### usecase
+※現在は存在していませんが、将来的に作成する予定です  
 ViewModel と Repositryの仲介をします。  
 ViewModelはUsecaseを介さないとデータへアクセスできません
 
