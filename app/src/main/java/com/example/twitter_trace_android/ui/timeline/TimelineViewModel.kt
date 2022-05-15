@@ -4,19 +4,17 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.twitter_trace_android.data.model.Tweet
 import com.example.twitter_trace_android.data.model.User
 import com.example.twitter_trace_android.data.repository.tweet.TweetRepository
-import com.example.twitter_trace_android.data.repository.tweet.impl.tweetLists
 import com.example.twitter_trace_android.data.repository.user.UserRepository
 import com.example.twitter_trace_android.data.successOr
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 // region UI State
 /**
@@ -54,7 +52,7 @@ private data class TimelineViewModelState(
     val user: User = User(),
     val tweetListsList: SnapshotStateList<TweetList> = mutableStateListOf(),
     val selectedListId: String = ""
-){
+) {
     val uiState: TimelineUiState = TimelineUiState(
         isLoading = isLoading,
         user = user,
@@ -73,7 +71,8 @@ private data class TimelineViewModelState(
  * - ビジネスレイヤやデータレイヤなど、通常は階層の他のレイヤに配置されるアプリのビジネス ロジックへのアクセスを提供する。
  * - 特定の画面に表示するアプリデータ（画面または UI の状態）を準備する。
  */
-class TimelineViewModel(
+@HiltViewModel
+class TimelineViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val tweetRepository: TweetRepository
 ) : ViewModel() {
@@ -130,9 +129,10 @@ class TimelineViewModel(
     }
 
 
-    private fun refreshTweetListsList(){
+    private fun refreshTweetListsList() {
         viewModelScope.launch {
-            val tweetListsListResult = async { tweetRepository.getTweetListsList(uiState.value.user.id) }
+            val tweetListsListResult =
+                async { tweetRepository.getTweetListsList(uiState.value.user.id) }
             val tweetListsList = tweetListsListResult.await().successOr(mutableListOf())
 
             viewModelState.update {
@@ -144,39 +144,28 @@ class TimelineViewModel(
         }
     }
 
-    private fun loadSelectedListTweet(){
+    private fun loadSelectedListTweet() {
         val tweetListsList = uiState.value.tweetListsList
 
-        val currentSelectedListIndex = tweetListsList.indexOfFirst { it.id == uiState.value.selectedListId }
+        val currentSelectedListIndex =
+            tweetListsList.indexOfFirst { it.id == uiState.value.selectedListId }
         val currentSelectedTweetList = uiState.value.tweetListsList[currentSelectedListIndex]
         // 現在選択しているツイートリストのツイートが空の場合新規で読み込む
-        if ( currentSelectedTweetList.tweets.isEmpty() ) {
+        if (currentSelectedTweetList.tweets.isEmpty()) {
             viewModelScope.launch {
-                val tweetResult = async { tweetRepository.getTweets(currentSelectedTweetList.belongUserIds) }
+                val tweetResult =
+                    async { tweetRepository.getTweets(currentSelectedTweetList.belongUserIds) }
 
-                uiState.value.tweetListsList[currentSelectedListIndex] = tweetListsList[currentSelectedListIndex].copy(
-                    tweets = tweetResult.await().successOr(emptyList())
-                )
+                uiState.value.tweetListsList[currentSelectedListIndex] =
+                    tweetListsList[currentSelectedListIndex].copy(
+                        tweets = tweetResult.await().successOr(emptyList())
+                    )
 
                 viewModelState.update {
                     it.copy(
                         tweetListsList = tweetListsList.toMutableStateList()
                     )
                 }
-            }
-        }
-    }
-
-    /**
-     */
-    companion object {
-        fun provideFactory(
-            userRepository: UserRepository,
-            tweetRepository: TweetRepository
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return TimelineViewModel(userRepository, tweetRepository) as T
             }
         }
     }

@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("dagger.hilt.android.plugin")
+    kotlin("kapt")
 }
 
 android {
@@ -22,7 +24,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -87,5 +92,17 @@ dependencies {
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.16.0")
 
     // navigation
-    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
+    implementation("androidx.navigation:navigation-compose:2.5.0-beta01")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.37")
+    kapt("com.google.dagger:hilt-android-compiler:2.37")
+
+    // Hilt - ViewModel
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+    // Hilt - Navigation Component
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+
 }

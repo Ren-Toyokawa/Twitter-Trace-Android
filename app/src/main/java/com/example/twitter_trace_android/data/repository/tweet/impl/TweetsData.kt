@@ -3,8 +3,6 @@ package com.example.twitter_trace_android.data.repository.tweet.impl
 import com.example.twitter_trace_android.R
 import com.example.twitter_trace_android.data.model.Tweet
 import com.example.twitter_trace_android.data.model.User
-import com.example.twitter_trace_android.data.repository.user.impl.OsamuDazai
-import com.example.twitter_trace_android.data.repository.user.impl.users
 import com.example.twitter_trace_android.ui.timeline.TweetList
 import java.util.*
 

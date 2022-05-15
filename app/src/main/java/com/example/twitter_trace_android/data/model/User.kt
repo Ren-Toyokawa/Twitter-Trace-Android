@@ -2,7 +2,6 @@ package com.example.twitter_trace_android.data.model
 
 import androidx.annotation.DrawableRes
 import com.example.twitter_trace_android.R
-import com.example.twitter_trace_android.ui.timeline.TweetList
 
 /**
  *
