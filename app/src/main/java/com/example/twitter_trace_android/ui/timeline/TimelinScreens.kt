@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.twitter_trace_android.R
 import com.example.twitter_trace_android.data.model.Tweet
+import com.example.twitter_trace_android.data.repository.tweet.impl.tweets
 import com.example.twitter_trace_android.data.repository.user.impl.users
 import com.example.twitter_trace_android.ui.theme.TwitterTraceAndroidTheme
 import java.util.*
@@ -261,7 +262,7 @@ fun TweetBody(tweet: String) {
         fontSize = 13.sp,
         color = Color.White,
         fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Left
     )
 }
 
@@ -328,7 +329,7 @@ fun TweetCellPreview() {
             TweetCell(
                 tweet = Tweet(
                     tweetedUser = users[0],
-                    tweet = "test",
+                    tweet = tweets[0].tweet,
                     tweetedAt = Date()
                 )
             )
